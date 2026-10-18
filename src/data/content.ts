@@ -100,7 +100,11 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-// --- Technical Skills ---
+// --- Availability status (shown as a pill in Contact) ---
+// ✏️ Keep this current — edit this one line when your status changes
+export const AVAILABILITY = 'Open to internships & research — Summer 2026';
+
+// --- Technical Skills (4 groups) ---
 export const SKILLS: SkillCategory[] = [
   {
     label: "Languages",
@@ -111,20 +115,12 @@ export const SKILLS: SkillCategory[] = [
     skills: ["Machine Learning", "LLM APIs", "Agentic AI", "RAG", "Vector Search", "Computer Vision"],
   },
   {
-    label: "Systems",
-    skills: ["Linux", "xv6", "Operating Systems", "ANTLR4", "Compiler Construction"],
+    label: "Systems & Web",
+    skills: ["Linux", "xv6", "Operating Systems", "ANTLR4", "Compiler Construction", "React", "Node.js", "Express", "PostgreSQL", "Supabase", "REST APIs"],
   },
   {
-    label: "Web",
-    skills: ["React", "Node.js", "Express", "PostgreSQL", "Supabase", "REST APIs"],
-  },
-  {
-    label: "Embedded",
-    skills: ["ATmega32", "AVR C", "Timers", "PWM", "ADC", "Interrupts", "UART", "I2C", "SPI", "Sensors & Actuators"],
-  },
-  {
-    label: "Tools",
-    skills: ["Git", "GitHub", "Docker", "VS Code", "WSL/Linux"],
+    label: "Embedded & Tools",
+    skills: ["ATmega32", "AVR C", "Timers", "PWM", "ADC", "Interrupts", "UART", "I2C", "SPI", "Sensors & Actuators", "Git", "GitHub", "Docker", "VS Code", "WSL"],
   },
 ];
 

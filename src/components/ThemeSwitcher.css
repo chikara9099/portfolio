@@ -12,8 +12,9 @@
   background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-full);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   cursor: pointer;
+  white-space: nowrap;
   transition: all var(--duration-fast) var(--ease-out);
 }
 

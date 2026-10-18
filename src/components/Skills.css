@@ -1,30 +1,31 @@
+/* ============================================
+   SKILLS — one elevated panel, cells inside.
+   Surface comes from the SpotlightCard wrapper.
+   ============================================ */
+.skills-panel {
+  padding: var(--space-2xl);
+}
+
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-xl);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xl) var(--space-lg);
 }
 
-.skills-category-spotlight {
-  height: 100%;
-}
-
-.skills-category__inner {
-  padding: var(--space-xl);
+.skills-category {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  height: 100%;
 }
 
+/* Small mono label — a quiet caption above the chips */
 .skills-category__label {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.16em;
 }
 
 .skills-category__tags {
@@ -33,9 +34,20 @@
   gap: var(--space-sm);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1023px) {
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-panel {
+    padding: var(--space-xl);
+  }
+}
+
+@media (max-width: 639px) {
   .skills-grid {
     grid-template-columns: 1fr;
-    gap: var(--space-xl);
   }
 }

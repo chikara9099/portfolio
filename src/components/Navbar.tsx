@@ -1,22 +1,27 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Download } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Download, Menu, X } from 'lucide-react';
 import { PROFILE } from '../data/content';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { Magnetic } from './Magnetic';
+import { useRespectfulMotion } from '../motion';
 import resumePdf from '../assets/Shahriar_Alam_Patwary_Resume.pdf';
 import './Navbar.css';
 
 const NAV_LINKS = [
-  { label: 'About', href: '#about' },
   { label: 'Projects', href: '#projects' },
+  { label: 'About', href: '#about' },
   { label: 'Skills', href: '#skills' },
+  { label: 'Education', href: '#education' },
+  { label: 'Leadership', href: '#leadership-research' },
   { label: 'Contact', href: '#contact' },
 ];
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { reduced, springSlow, fade } = useRespectfulMotion();
 
   useEffect(() => {
     let ticking = false;
@@ -56,12 +61,27 @@ export const Navbar = () => {
     };
   }, []);
 
+  // Close the sheet on Escape and on scroll (a menu over a moving page is noise)
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    const onScroll = () => setMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [menuOpen]);
+
   return (
     <motion.nav
-      className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}
+      className={`navbar ${scrolled ? 'navbar--scrolled' : ''} ${menuOpen ? 'navbar--menu-open' : ''}`}
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      transition={reduced ? { duration: 0.2 } : { ...springSlow, delay: 0.2 }}
     >
       <div className="navbar__inner container">
         <a href="#hero" className="navbar__logo" aria-label="Shahriar Alam Patwary">
@@ -100,7 +120,54 @@ export const Navbar = () => {
           <Magnetic strength={0.3}>
             <ThemeSwitcher />
           </Magnetic>
+
+          {/* Mobile only — hamburger lives in the capsule */}
+          <button
+            className="navbar__menu-btn"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-expanded={menuOpen}
+            aria-controls="navbar-menu-sheet"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          >
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
+
+        {/* Mobile menu sheet — glass panel under the capsule */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              id="navbar-menu-sheet"
+              className="navbar__sheet"
+              initial={reduced ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.97 }}
+              animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={reduced ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
+              transition={reduced ? fade : springSlow}
+            >
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={`navbar__sheet-link ${activeSection === link.href.slice(1) ? 'navbar__sheet-link--active' : ''}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href={resumePdf}
+                download="Shahriar_Alam_Patwary_Resume.pdf"
+                className="navbar__sheet-link navbar__sheet-link--resume"
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setMenuOpen(false)}
+              >
+                <Download size={14} />
+                <span>Download Resume</span>
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.nav>
   );

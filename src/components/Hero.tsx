@@ -13,22 +13,32 @@ import './Hero.css';
 
 const nameWords = "Shahriar Alam Patwary".split(' ');
 
+/* Credential strip — the strongest facts, no decoration */
+const CREDENTIALS = [
+  'IUT ICT Fest Champion 2026',
+  'Production software · 180+ units',
+  'NASA Space Apps · National Selection',
+];
+
 export const Hero = () => {
   const { showToast } = useToast();
-  const { reduced, transition, springSlow, fade } = useRespectfulMotion();
+  const { reduced, springSlow, fade } = useRespectfulMotion();
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
   const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  // Scroll depth — the stage content drifts up and dims as it leaves the light
+  const contentY = useTransform(scrollYProgress, [0, 0.3], [0, -48]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.25], [1, 0.25]);
 
   // Staggered name reveal — springs by default, cross-fade under reduced motion
   const containerVariants: Variants = {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: reduced ? 0 : 0.1,
+        staggerChildren: reduced ? 0 : 0.12,
         delayChildren: reduced ? 0 : 0.35,
       },
     },
@@ -40,26 +50,32 @@ export const Hero = () => {
         visible: { opacity: 1, transition: fade },
       }
     : {
-        hidden: { opacity: 0, y: 25, filter: 'blur(4px)' },
+        hidden: { opacity: 0, y: 30, filter: 'blur(4px)' },
         visible: {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          transition: springSlow,
+          transition: { ...springSlow, damping: 1 },
         },
       };
 
   return (
     <section id="hero" className="hero" ref={heroRef}>
-      <div className="hero__content container">
-        {/* Avatar */}
+      {/* The single ambient spotlight of the site */}
+      <div className="hero__spotlight" aria-hidden />
+
+      {/* The stage container shares the spotlight's exit: drift + dim */}
+      <motion.div
+        className="hero__content container"
+        style={reduced ? undefined : { y: contentY, opacity: contentOpacity }}
+      >
+        {/* Avatar on the stage light */}
         <motion.div
           className="hero__avatar-frame"
-          initial={{ opacity: 0, scale: 0.85, y: -10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={reduced ? fade : springSlow}
         >
-          <div className="hero__avatar-glow" />
           <img
             src={profilePic}
             alt={PROFILE.name}
@@ -67,7 +83,7 @@ export const Hero = () => {
           />
         </motion.div>
 
-        {/* Staggered name (single line) */}
+        {/* Display name */}
         <motion.h1
           className="hero__name"
           variants={containerVariants}
@@ -89,21 +105,32 @@ export const Hero = () => {
         {/* Tagline */}
         <motion.p
           className="hero__tagline"
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={reduced ? fade : { ...springSlow, delay: 0.8 } as Transition}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={reduced ? fade : ({ ...fade, delay: reduced ? 0 : 0.9 } as Transition)}
         >
           {PROFILE.tagline}
         </motion.p>
 
-        {/* Actions & Social links */}
+        {/* Credential strip */}
+        <motion.ul
+          className="hero__credentials"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={reduced ? fade : ({ ...fade, delay: reduced ? 0 : 1.05 } as Transition)}
+        >
+          {CREDENTIALS.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </motion.ul>
+
+        {/* Actions */}
         <motion.div
           className="hero__actions"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={reduced ? fade : { ...transition, delay: 1.05 } as Transition}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={reduced ? fade : ({ ...fade, delay: reduced ? 0 : 1.2 } as Transition)}
         >
-          {/* Primary path first — wayfinding */}
           <Magnetic strength={0.3}>
             <a
               href="#projects"
@@ -129,8 +156,6 @@ export const Hero = () => {
               <Download size={14} className="hero__resume-icon" />
             </a>
           </Magnetic>
-
-          <div className="hero__divider" />
 
           <div className="hero__links">
             <Magnetic strength={0.35}>
@@ -177,12 +202,12 @@ export const Hero = () => {
           className="hero__scroll-hint"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={reduced ? fade : { duration: 0.6, delay: 1.4 }}
+          transition={reduced ? fade : { duration: 0.6, delay: 1.5 }}
           style={{ opacity: scrollHintOpacity }}
         >
           <ChevronDown size={20} className="hero__scroll-icon" />
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 };

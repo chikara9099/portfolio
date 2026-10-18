@@ -13,8 +13,8 @@ export const About = () => {
 
   return (
     <section id="about" className="section">
-      <div className="container">
-        <SectionHeader label="01" title="About" />
+      <div className="container container--narrow">
+        <SectionHeader label="02" title="About" />
         <motion.div
           ref={ref}
           className="about__content"

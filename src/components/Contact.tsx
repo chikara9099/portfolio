@@ -1,7 +1,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { Github, Linkedin, Mail, ArrowUpRight, Copy, Check } from 'lucide-react';
-import { PROFILE } from '../data/content';
+import { PROFILE, AVAILABILITY } from '../data/content';
 import { useRespectfulMotion } from '../motion';
 import { useToast } from './Toast';
 import { playSuccessChime, playBlip } from '../utils/sound';
@@ -33,8 +33,12 @@ export const Contact = () => {
           animate={isInView ? (reduced ? { opacity: 1 } : { opacity: 1, y: 0 }) : {}}
           transition={transitionSlow}
         >
-          <span className="contact__label">07 — Contact</span>
+          <span className="contact__label">06 — Contact</span>
           <h2 className="contact__heading">Let&apos;s connect</h2>
+          <span className="contact__status">
+            <span className="contact__status-dot" aria-hidden />
+            {AVAILABILITY}
+          </span>
           <p className="contact__subtext">
             Open to research opportunities, prototypes, systems work, and interesting technical conversations.
           </p>

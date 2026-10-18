@@ -1,37 +1,41 @@
+/* ============================================
+   NAVBAR — floating glass capsule (Zen Spotlight)
+   ============================================ */
 .navbar {
   position: fixed;
-  top: 0;
+  top: 0.75rem;
+  /* No transform centering — framer-motion owns `transform` on this node
+     (it animates y), which would wipe out a translateX(-50%) shift. */
   left: 0;
   right: 0;
+  margin-inline: auto;
+  width: min(var(--content-max-width), calc(100% - 1.5rem));
+  height: 3.5rem;
   z-index: 100;
-  height: var(--nav-height);
   display: flex;
   align-items: center;
-  transition: all var(--duration-normal) var(--ease-out);
+  border-radius: var(--radius-full);
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: inset 0 0 0 1px var(--glass-border);
+  transition: background var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
 }
 
 .navbar--scrolled {
   background: var(--glass-strong);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  /* Light catches the top edge of the material (dark mode only detail) */
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 0 0 1px var(--glass-border),
+    var(--shadow-floating);
 }
 
-[data-mode='light'] .navbar--scrolled {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-/* Scroll-edge effect: a soft vertical fade instead of a hard 1px border line */
-.navbar--scrolled::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent 0%, rgba(var(--accent-rgb), 0.35) 50%, transparent 100%);
-  pointer-events: none;
+/* Sheet open → the capsule keeps its solid glass state regardless of scroll */
+.navbar--menu-open {
+  background: var(--glass-strong);
+  box-shadow:
+    inset 0 0 0 1px var(--glass-border),
+    var(--shadow-floating);
 }
 
 .navbar__inner {
@@ -39,6 +43,10 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: var(--space-md);
+  /* Capsule padding — tighter than a page container */
+  padding-left: var(--space-lg);
+  padding-right: var(--space-sm);
 }
 
 .navbar__logo {
@@ -50,7 +58,7 @@
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  transition: color var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-fast) var(--ease-out);
 }
 
 .navbar__logo:hover {
@@ -86,42 +94,13 @@
 .navbar__right {
   display: flex;
   align-items: center;
-  gap: var(--space-xl);
-}
-
-.navbar__resume-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.85rem;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-full);
-  text-decoration: none;
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.navbar__resume-btn:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-  background: var(--accent-glow);
-  transform: translateY(-1px);
-}
-
-@media (max-width: 600px) {
-  .navbar__resume-btn {
-    display: none;
-  }
+  gap: var(--space-sm);
 }
 
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
 }
 
 .navbar__link {
@@ -160,11 +139,118 @@
   width: 100%;
 }
 
-@media (max-width: 480px) {
+.navbar__resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.navbar__resume-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+/* ⌘K trigger — removed; the site is short enough to scroll on its own. */
+
+/* Mobile menu button + sheet — appear only below 720px.
+   Kept clearly visible: dark glass swallows hairline chrome. */
+.navbar__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--text-primary);
+  background: var(--accent-glow);
+  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.navbar__menu-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.navbar__sheet {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm);
+  background: var(--glass-strong);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-floating);
+  z-index: 110;
+}
+
+.navbar__sheet-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 48px;
+  padding: 0.6rem var(--space-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.navbar__sheet-link:hover,
+.navbar__sheet-link:active {
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.08);
+}
+
+.navbar__sheet-link--active {
+  color: var(--accent);
+}
+
+.navbar__sheet-link--resume {
+  margin-top: var(--space-xs);
+  border-top: 1px solid var(--hairline);
+  color: var(--text-primary);
+}
+
+@media (max-width: 720px) {
   .navbar__links {
-    gap: var(--space-md);
+    display: none;
   }
 
+  .navbar__menu-btn {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar__resume-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
   .navbar__link {
     font-size: 0.8rem;
   }

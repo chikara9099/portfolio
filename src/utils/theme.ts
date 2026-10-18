@@ -201,6 +201,8 @@ export function getMode(): ColorMode {
     const saved = localStorage.getItem('portfolio_color_mode');
     if (saved === 'light' || saved === 'dark' || saved === 'auto') return saved;
   }
+  // No saved choice → follow the visitor's system preference.
+  // The dark identity lives in the design itself, not in overriding it.
   return 'auto';
 }
 

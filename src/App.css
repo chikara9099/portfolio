@@ -8,18 +8,3 @@
   position: relative;
   z-index: 1;
 }
-
-.section-divider {
-  max-width: var(--content-max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-lg);
-  padding-right: var(--space-lg);
-}
-
-@media (max-width: 768px) {
-  .section-divider {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-  }
-}

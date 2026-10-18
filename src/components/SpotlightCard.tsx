@@ -10,14 +10,15 @@ interface SpotlightCardProps extends Omit<HTMLMotionProps<'div'>, 'children' | '
 }
 
 /**
- * Pointer-reactive card: the spotlight follows the cursor with a spring
- * (not a React re-render per mousemove), plus a gentle 3D tilt that springs
- * back on leave. Transform/opacity only — compositor friendly.
+ * Zen Spotlight card: a raised surface whose spotlight follows the cursor
+ * with a spring (no React re-render per mousemove), plus a gentle 3D tilt
+ * that springs back on leave and a small hover lift. Compositor-only.
+ * All motion props (initial/whileInView/transition) pass straight through.
  */
 export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   children,
   className = '',
-  spotlightColor = 'rgba(var(--accent-rgb), 0.14)',
+  spotlightColor = 'rgba(var(--accent-rgb), 0.10)',
   ...props
 }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -36,11 +37,11 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   const sx = useSpring(mx, follow);
   const sy = useSpring(my, follow);
 
-  const TILT_MAX = 2.5; // degrees — subtle, keeps text legible
+  const TILT_MAX = 1.8; // degrees — a whisper of depth, text stays legible
   const rotateX = useSpring(useTransform(ny, [-0.5, 0.5], [TILT_MAX, -TILT_MAX]), follow);
   const rotateY = useSpring(useTransform(nx, [-0.5, 0.5], [-TILT_MAX, TILT_MAX]), follow);
 
-  const spotlightBg = useMotionTemplate`radial-gradient(380px circle at ${sx}px ${sy}px, ${spotlightColor}, transparent 65%)`;
+  const spotlightBg = useMotionTemplate`radial-gradient(420px circle at ${sx}px ${sy}px, ${spotlightColor}, transparent 70%)`;
   const glowOpacity = useTransform(useSpring(hovered, follow), (v) => v);
 
   const updatePointer = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -72,14 +73,13 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
       style={
         reduced
           ? undefined
-          : { rotateX, rotateY, transformPerspective: 900, transformStyle: 'preserve-3d' }
+          : { rotateX, rotateY, transformPerspective: 1100, transformStyle: 'preserve-3d' }
       }
       {...props}
     >
-      {/* Spotlight border glow layer */}
+      {/* Spotlight layer */}
       <motion.div className="spotlight-card__glow" style={{ background: spotlightBg, opacity: glowOpacity }} />
-      {/* Inner Content */}
-      <div className="spotlight-card__inner">{children}</div>
+      {children}
     </motion.div>
   );
 };

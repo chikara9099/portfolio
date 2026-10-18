@@ -1,0 +1,116 @@
+/* Merged Leadership & Research section — reuses the leadership card styling
+   and the research chip styling, arranged side by side. */
+
+.leadership-research__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-xl);
+  align-items: stretch;
+}
+
+.leadership-research__interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+  align-content: center;
+}
+
+.research__item {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: default;
+  white-space: nowrap;
+}
+
+.research__item:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.leadership__card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  padding: var(--space-2xl);
+  height: 100%;
+}
+
+.leadership__icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--accent-glow);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.leadership__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.leadership__org {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+}
+
+.leadership__role {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.leadership__desc {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+
+@media (max-width: 768px) {
+  .leadership-research__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .leadership-research__interests {
+    align-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .leadership__card {
+    flex-direction: column;
+    padding: var(--space-xl);
+  }
+}
+
+@media (max-width: 640px) {
+  .research__item {
+    /* Chips must never force horizontal scroll on small phones */
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .research__item {
+    border-color: var(--border-hover);
+  }
+}
