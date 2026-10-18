@@ -17,7 +17,7 @@
   background: var(--accent-glow);
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
   animation: pulseGlow 3s ease-in-out infinite;
 }
 
@@ -27,10 +27,10 @@
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 0 rgba(56, 189, 248, 0);
+    box-shadow: 0 0 0 rgba(var(--accent-rgb), 0);
   }
   50% {
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.25);
   }
 }
 
@@ -62,21 +62,21 @@
 
 .projects__filter-btn:hover {
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-hover);
+  background: var(--accent-glow);
 }
 
 .projects__filter-btn--active {
-  color: #0c0c0e;
+  color: var(--bg-primary);
   background: var(--accent);
   border-color: var(--accent);
   font-weight: 600;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
 }
 
 .projects__filter-btn--active:hover {
   background: var(--accent);
-  color: #0c0c0e;
+  color: var(--bg-primary);
   border-color: var(--accent);
 }
 
@@ -91,7 +91,7 @@
 
 .projects__filter-btn--active .projects__filter-count {
   background: rgba(0, 0, 0, 0.2);
-  color: #0c0c0e;
+  color: var(--bg-primary);
 }
 
 /* Grid & Cards */
@@ -103,6 +103,74 @@
 
 .project-card-spotlight {
   height: 100%;
+}
+
+/* Gallery cover — shared element with the project viewer.
+   The image FILLS the box horizontally (object-fit: cover, cropped only
+   vertically), so no ratio leaves blank side space. */
+.project-card__shot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  margin: calc(-1 * var(--space-xl)) calc(-1 * var(--space-xl)) 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border: none;
+  border-bottom: 1px solid var(--glass-border);
+  cursor: zoom-in;
+  background: var(--bg-elevated);
+}
+
+.project-card__shot-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) saturate(1.35) brightness(0.85);
+  transform: scale(1.12); /* keeps blurred edges out of frame */
+}
+
+[data-mode='light'] .project-card__shot-bg {
+  filter: blur(28px) saturate(1.2) brightness(1.05);
+}
+
+.project-card__shot img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 350ms var(--ease-out);
+}
+
+.project-card__shot:hover img,
+.project-card__shot:focus-visible img {
+  transform: scale(1.025);
+}
+
+.project-card__shot-count {
+  position: absolute;
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-primary);
+  background: var(--glass);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-full);
+  pointer-events: none;
 }
 
 .project-card__content {
@@ -124,7 +192,7 @@
   background: var(--accent-glow);
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
   width: fit-content;
   letter-spacing: 0.02em;
 }
@@ -167,7 +235,7 @@
 }
 
 .project-card-spotlight:hover .project-card__tag {
-  border-color: rgba(56, 189, 248, 0.2);
+  border-color: rgba(var(--accent-rgb), 0.2);
   color: var(--text-secondary);
 }
 
@@ -196,18 +264,18 @@
 .project-card__link:hover {
   color: var(--accent);
   background: var(--accent-glow);
-  border-color: rgba(56, 189, 248, 0.3);
+  border-color: rgba(var(--accent-rgb), 0.3);
   transform: translateY(-1px);
 }
 
 .project-card__link--live {
   color: var(--accent);
-  border-color: rgba(56, 189, 248, 0.2);
-  background: rgba(56, 189, 248, 0.05);
+  border-color: rgba(var(--accent-rgb), 0.2);
+  background: rgba(var(--accent-rgb), 0.05);
 }
 
 .project-card__link--live:hover {
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.25);
 }
 
 @media (max-width: 768px) {

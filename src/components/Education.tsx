@@ -7,12 +7,14 @@ import { CourseworkModal } from './CourseworkModal';
 import { COURSEWORK_DETAILS } from '../data/courseworkDetails';
 import type { CourseDetail } from '../data/courseworkDetails';
 import { SpotlightCard } from './SpotlightCard';
+import { useRespectfulMotion } from '../motion';
 import './Education.css';
 import './SectionHeader.css';
 
 export const Education = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const { reduced, transitionSlow } = useRespectfulMotion();
   const [selectedCourse, setSelectedCourse] = useState<CourseDetail | null>(null);
 
   const handleCourseClick = (courseName: string) => {
@@ -31,9 +33,9 @@ export const Education = () => {
         <SectionHeader label="02" title="Education" />
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 25 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 25 }}
+          animate={isInView ? (reduced ? { opacity: 1 } : { opacity: 1, y: 0 }) : {}}
+          transition={{ ...transitionSlow, delay: 0.15 }}
         >
           <SpotlightCard className="education__card-spotlight">
             <div className="education__card-inner">

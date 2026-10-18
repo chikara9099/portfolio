@@ -25,7 +25,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
 }
 
 .education__institution {
@@ -138,7 +138,7 @@
   border-color: var(--accent);
   background: var(--accent-glow);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.15);
 }
 
 .education__course-icon {
@@ -150,6 +150,10 @@
 .education__course-btn:hover .education__course-icon {
   color: var(--accent);
   transform: translate(2px, -2px);
+}
+
+[data-mode='light'] .education__course-btn {
+  background: rgba(20, 18, 14, 0.03);
 }
 
 @media (max-width: 768px) {

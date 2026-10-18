@@ -11,16 +11,16 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1rem;
-  background: rgba(18, 18, 24, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: var(--glass);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(var(--accent-rgb), 0.3);
   border-radius: var(--radius-full);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.825rem;
   cursor: pointer;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.15);
+  box-shadow: var(--shadow-floating), 0 0 20px rgba(var(--accent-rgb), 0.15);
   transition: all var(--duration-normal) var(--ease-out);
 }
 
@@ -28,7 +28,7 @@
   border-color: var(--accent);
   color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.35);
+  box-shadow: var(--shadow-floating), 0 0 30px rgba(var(--accent-rgb), 0.35);
 }
 
 .terminal-launcher__pulse {
@@ -59,8 +59,8 @@
   font-size: 0.7rem;
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(var(--accent-rgb), 0.08);
+  border: 1px solid var(--glass-border);
   color: var(--text-muted);
 }
 

@@ -67,3 +67,38 @@
     opacity: 0.11;
   }
 }
+
+/* Light mode: the orbs sit on a cream background, so tint them down to ~40%
+   of their dark opacity. The keyframes animate `opacity`, which would win
+   over a plain property override — swap in lighter keyframes instead. */
+[data-mode='light'] .bg-canvas-wrapper {
+  background-color: #f7f5f0;
+}
+
+[data-mode='light'] .bg-aurora {
+  opacity: 0.05;
+  animation-name: auroraPulseLight;
+}
+
+[data-mode='light'] .bg-aurora--mid-purple {
+  opacity: 0.035;
+}
+
+[data-mode='light'] .bg-aurora--bottom-blue {
+  opacity: 0.03;
+}
+
+@keyframes auroraPulseLight {
+  0% {
+    transform: scale(0.95) translate(0, 0);
+    opacity: 0.05;
+  }
+  50% {
+    transform: scale(1.08) translate(30px, -20px);
+    opacity: 0.03;
+  }
+  100% {
+    transform: scale(1.02) translate(-20px, 20px);
+    opacity: 0.045;
+  }
+}

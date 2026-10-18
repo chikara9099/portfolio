@@ -71,6 +71,10 @@
   background: var(--accent-glow);
 }
 
+[data-mode='light'] .contact__copy-btn {
+  background: rgba(20, 18, 14, 0.03);
+}
+
 .contact__link-item {
   display: flex;
   align-items: center;

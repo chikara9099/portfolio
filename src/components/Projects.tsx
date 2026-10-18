@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, Trophy, Sparkles } from 'lucide-react';
+import { ExternalLink, Github, Trophy, Sparkles, Images } from 'lucide-react';
 import { PROJECTS } from '../data/content';
 import type { Project } from '../data/content';
+import { PROJECT_GALLERY } from '../data/gallery';
 import { SectionHeader } from './SectionHeader';
 import { SpotlightCard } from './SpotlightCard';
+import { ProjectViewer } from './ProjectViewer';
 import { playBlip } from '../utils/sound';
+import { useRespectfulMotion } from '../motion';
 import './Projects.css';
 import './SectionHeader.css';
 
@@ -44,10 +47,37 @@ function matchesCategory(project: Project, cat: Category): boolean {
   return true;
 }
 
-const ProjectCard = ({ project }: { project: Project }) => {
+const ProjectCard = ({ project, onOpenGallery }: { project: Project; onOpenGallery: (id: string) => void }) => {
+  const gallery = PROJECT_GALLERY[project.id];
+  const cover = gallery?.[0];
+
   return (
     <SpotlightCard className="project-card-spotlight">
       <div className="project-card__content">
+        {gallery && cover && (
+          <motion.button
+            layoutId={`project-shot-${project.id}`}
+            className="project-card__shot"
+            onClick={() => {
+              playBlip(1400);
+              onOpenGallery(project.id);
+            }}
+            whileTap={{ scale: 0.985 }}
+            aria-label={`Open gallery — ${project.title} (${gallery.length} screenshots)`}
+          >
+            <span
+              className="project-card__shot-bg"
+              style={{ backgroundImage: `url(${cover.src})` }}
+              aria-hidden
+            />
+            <img src={cover.src} alt={cover.caption} loading="lazy" draggable={false} />
+            <span className="project-card__shot-count">
+              <Images size={11} aria-hidden />
+              {gallery.length}
+            </span>
+          </motion.button>
+        )}
+
         {project.achievement && (
           <div className="project-card__badge">
             <Trophy size={13} />
@@ -101,6 +131,8 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
 export const Projects = () => {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [viewer, setViewer] = useState<{ id: string; index: number } | null>(null);
+  const { reduced, transition } = useRespectfulMotion();
 
   const filteredProjects = PROJECTS.filter((p) => matchesCategory(p, activeCategory));
 
@@ -108,6 +140,11 @@ export const Projects = () => {
     setActiveCategory(cat);
     playBlip(1300);
   };
+
+  const openGallery = (id: string) => setViewer({ id, index: 0 });
+
+  const viewerProject = viewer ? PROJECTS.find((p) => p.id === viewer.id) : null;
+  const viewerImages = viewerProject ? PROJECT_GALLERY[viewerProject.id] : null;
 
   return (
     <section id="projects" className="section">
@@ -141,24 +178,39 @@ export const Projects = () => {
           })}
         </div>
 
-        {/* Projects Grid with layout animation */}
-        <motion.div layout className="projects-grid">
+        {/* Projects Grid with springy layout animation */}
+        <motion.div layout={reduced ? undefined : true} transition={transition} className="projects-grid">
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
               <motion.div
                 key={project.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                layout={reduced ? undefined : true}
+                initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+                animate={reduced ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+                transition={transition}
               >
-                <ProjectCard project={project} />
+                <ProjectCard project={project} onOpenGallery={openGallery} />
               </motion.div>
             ))}
           </AnimatePresence>
         </motion.div>
       </div>
+
+      {/* Shared-element zoom: card cover → gallery viewer */}
+      <AnimatePresence>
+        {viewerProject && viewerImages && viewer && (
+          <ProjectViewer
+            key={viewerProject.id}
+            title={viewerProject.title}
+            images={viewerImages}
+            index={viewer.index}
+            layoutId={`project-shot-${viewerProject.id}`}
+            onClose={() => setViewer(null)}
+            onNavigate={(index) => setViewer({ id: viewerProject.id, index })}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };

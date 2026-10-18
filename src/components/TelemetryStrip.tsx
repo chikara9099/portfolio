@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Trophy, GraduationCap, Building2, Rocket } from 'lucide-react';
 import { SpotlightCard } from './SpotlightCard';
+import { useRespectfulMotion } from '../motion';
 import './TelemetryStrip.css';
 
 const STATS = [
@@ -31,6 +32,8 @@ const STATS = [
 ];
 
 export const TelemetryStrip = () => {
+  const { reduced, spring } = useRespectfulMotion();
+
   return (
     <div className="telemetry-wrapper container">
       <div className="telemetry-grid">
@@ -39,10 +42,10 @@ export const TelemetryStrip = () => {
           return (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={reduced ? { opacity: 0 } : { opacity: 0, y: 20 }}
+              whileInView={reduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ ...spring, delay: i * 0.08 }}
             >
               <SpotlightCard className="telemetry-card">
                 <div className="telemetry-card__inner">

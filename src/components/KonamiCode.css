@@ -26,7 +26,7 @@
   background: linear-gradient(90deg, #38bdf8, #a855f7, #ec4899, #f59e0b, #38bdf8);
   background-size: 300% 300%;
   animation: rainbowBorder 3s linear infinite, slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 10px 40px rgba(56, 189, 248, 0.4), 0 0 50px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 10px 40px rgba(var(--accent-rgb), 0.4), 0 0 50px rgba(var(--accent-rgb), 0.2);
 }
 
 @keyframes rainbowBorder {
@@ -47,9 +47,9 @@
 }
 
 .overdrive-banner__content {
-  background: rgba(14, 14, 20, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--glass-strong);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-radius: var(--radius-full);
   padding: 0.75rem 1.4rem;
   display: flex;
@@ -61,7 +61,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(56, 189, 248, 0.15);
+  background: rgba(var(--accent-rgb), 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,7 +69,7 @@
 }
 
 .overdrive-banner__zap {
-  color: #38bdf8;
+  color: var(--accent);
   animation: zapBounce 0.8s ease-in-out infinite alternate;
 }
 
@@ -86,14 +86,14 @@
   font-family: var(--font-sans);
   font-size: 0.9rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
 .overdrive-banner__sub {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .overdrive-banner__sparkle {
@@ -109,7 +109,7 @@
 .overdrive-banner__close {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   border-radius: 50%;
@@ -120,7 +120,7 @@
 }
 
 .overdrive-banner__close:hover {
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 @media (max-width: 600px) {

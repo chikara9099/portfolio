@@ -2,6 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { Github, Linkedin, Mail, ArrowUpRight, Copy, Check } from 'lucide-react';
 import { PROFILE } from '../data/content';
+import { useRespectfulMotion } from '../motion';
 import { useToast } from './Toast';
 import { playSuccessChime, playBlip } from '../utils/sound';
 import './Contact.css';
@@ -9,6 +10,7 @@ import './Contact.css';
 export const Contact = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const { reduced, transitionSlow } = useRespectfulMotion();
   const { showToast } = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -27,9 +29,9 @@ export const Contact = () => {
         <motion.div
           ref={ref}
           className="contact__content"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 30 }}
+          animate={isInView ? (reduced ? { opacity: 1 } : { opacity: 1, y: 0 }) : {}}
+          transition={transitionSlow}
         >
           <span className="contact__label">07 — Contact</span>
           <h2 className="contact__heading">Let&apos;s connect</h2>

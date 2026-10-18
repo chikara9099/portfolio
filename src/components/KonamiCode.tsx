@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Sparkles, X, Zap } from 'lucide-react';
 import { playOverdriveFanfare } from '../utils/sound';
 import './KonamiCode.css';
@@ -37,26 +37,50 @@ export const KonamiCode = ({
   const [triggered, setTriggered] = useState(false);
   const inputSequence = useRef<string[]>([]);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  // Auto-dismiss timer id — kept in a ref so unmount / re-trigger can cancel it.
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Trigger when parent activates
-  useEffect(() => {
-    if (active && !triggered) {
-      triggerEasterEgg();
-    }
-  }, [active]);
-
-  const triggerEasterEgg = () => {
+  const triggerEasterEgg = useCallback(() => {
     setTriggered(true);
-    playOverdriveFanfare();
+  }, []);
 
-    // Auto-dismiss after 8 seconds
-    const timer = setTimeout(() => {
+  // Banner state derived from either trigger source: the Konami sequence or
+  // the `active` prop from a parent.
+  const celebrating = triggered || !!active;
+
+  // Clear the pending auto-dismiss on unmount (the timer's clear fn used to be
+  // returned by triggerEasterEgg and never registered — a setState-on-dead-
+  // component leak after navigating away mid-celebration).
+  useEffect(() => {
+    return () => {
+      if (dismissTimer.current !== null) {
+        clearTimeout(dismissTimer.current);
+        dismissTimer.current = null;
+      }
+    };
+  }, []);
+
+  // Fanfare + haptic once per celebration, whichever way it was triggered
+  const announcedRef = useRef(false);
+  useEffect(() => {
+    if (celebrating && !announcedRef.current) {
+      announcedRef.current = true;
+      playOverdriveFanfare();
+    }
+    if (!celebrating) {
+      announcedRef.current = false;
+    }
+  }, [celebrating]);
+
+  // Auto-dismiss after 8 seconds of celebrating
+  useEffect(() => {
+    if (!celebrating) return;
+    const t = setTimeout(() => {
       setTriggered(false);
-      if (onReset) onReset();
+      if (active) onReset?.();
     }, 8000);
-
-    return () => clearTimeout(timer);
-  };
+    return () => clearTimeout(t);
+  }, [celebrating, active, onReset]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -81,11 +105,20 @@ export const KonamiCode = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [triggerEasterEgg]);
 
   // Confetti / Particle burst animation
   useEffect(() => {
-    if (!triggered) return;
+    if (!celebrating) return;
+
+    // Respect prefers-reduced-motion: show the banner, skip the burst
+    // (no particle creation, no rAF loop).
+    if (
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return;
+    }
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -143,9 +176,9 @@ export const KonamiCode = ({
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [triggered]);
+  }, [celebrating]);
 
-  if (!triggered) return null;
+  if (!celebrating) return null;
 
   return (
     <div className="overdrive-hud">

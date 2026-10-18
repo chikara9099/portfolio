@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal as TerminalIcon, X, Volume2, VolumeX, Maximize2, Minimize2 } from 'lucide-react';
 import { PROFILE, EDUCATION, PROJECTS, SKILLS } from '../data/content';
 import resumePdf from '../assets/Shahriar_Alam_Patwary_Resume.pdf';
 import { playKeyClick, playSuccessChime, playBlip, setSoundMuted, getSoundMuted } from '../utils/sound';
 import { THEMES, getCurrentTheme, applyTheme } from '../utils/theme';
+import { useRespectfulMotion } from '../motion';
 import './TerminalModal.css';
 
 interface TerminalLine {
@@ -62,20 +64,64 @@ export const TerminalModal = ({
   const [isMuted, setIsMuted] = useState(getSoundMuted());
   const [isMaximized, setIsMaximized] = useState(false);
   const [matrixActive, setMatrixActive] = useState(false);
+  const { reduced, springSlow, fade } = useRespectfulMotion();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const matrixCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const windowRef = useRef<HTMLDivElement | null>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
-  // Auto focus input when opened
+  // On open: remember the opener, focus the terminal input, lock body scroll.
+  // On close: unlock scroll and hand focus back to the element that opened us.
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
+      openerRef.current = (document.activeElement as HTMLElement) ?? null;
+      const focusTimer = window.setTimeout(() => {
         inputRef.current?.focus();
-      }, 100);
+      }, 60);
+      document.body.style.overflow = 'hidden';
       playBlip(900);
+      return () => {
+        window.clearTimeout(focusTimer);
+        document.body.style.overflow = '';
+      };
     }
+    openerRef.current?.focus?.();
   }, [isOpen]);
+
+  // Focus trap + Escape while the terminal is open (capture phase, within modal)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const root = windowRef.current;
+      if (!root) return;
+      const focusables = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const isInside = !!document.activeElement && root.contains(document.activeElement);
+      if (e.shiftKey && (!isInside || document.activeElement === first)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (!isInside || document.activeElement === last)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKey, true);
+    return () => document.removeEventListener('keydown', handleKey, true);
+  }, [isOpen, onClose]);
 
   // Scroll to bottom on new lines
   useEffect(() => {
@@ -230,7 +276,7 @@ export const TerminalModal = ({
         break;
 
       case 'resume':
-      case 'cv':
+      case 'cv': {
         newLines.push({
           type: 'success',
           text: (
@@ -249,6 +295,7 @@ export const TerminalModal = ({
         link.click();
         document.body.removeChild(link);
         break;
+      }
 
       case 'contact':
         newLines.push({
@@ -388,14 +435,29 @@ export const TerminalModal = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="terminal-overlay" onClick={onClose}>
-      <div
-        className={`terminal-window ${isMaximized ? 'terminal-window--maximized' : ''}`}
-        onClick={(e) => e.stopPropagation()}
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
+      className="terminal-overlay"
+        onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={fade}
       >
+        <motion.div
+          ref={windowRef}
+          className={`terminal-window ${isMaximized ? 'terminal-window--maximized' : ''}`}
+          onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Interactive developer terminal"
+          initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.96, filter: 'blur(6px)' }}
+          animate={reduced ? { opacity: 1 } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.96, filter: 'blur(6px)' }}
+          transition={reduced ? fade : springSlow}
+        >
         {/* Matrix background layer if active */}
         {matrixActive && <canvas ref={matrixCanvasRef} className="terminal__matrix-canvas" />}
 
@@ -444,11 +506,13 @@ export const TerminalModal = ({
 
         {/* Terminal Body */}
         <div className="terminal__body" onClick={() => inputRef.current?.focus()}>
-          {lines.map((line, idx) => (
-            <div key={idx} className={`terminal__line terminal__line--${line.type}`}>
-              {line.text}
-            </div>
-          ))}
+          <div className="terminal__output" aria-live="polite">
+            {lines.map((line, idx) => (
+              <div key={idx} className={`terminal__line terminal__line--${line.type}`}>
+                {line.text}
+              </div>
+            ))}
+          </div>
 
           {/* Active Input Line */}
           <div className="terminal__input-row">
@@ -467,7 +531,9 @@ export const TerminalModal = ({
           </div>
           <div ref={bottomRef} />
         </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

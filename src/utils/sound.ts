@@ -17,6 +17,18 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
+/**
+ * Fire haptic feedback (visual+audio+haptic should land on the same frame).
+ * Independent of the AudioContext but gated on the same mute flag — muting
+ * signals "be quiet", and vibration honors that too. Cheap 10ms tap by default.
+ */
+export function vibrate(pattern: number | number[] = 10): void {
+  if (getSoundMuted()) return;
+  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+    try { navigator.vibrate(pattern); } catch { /* unsupported — silent */ }
+  }
+}
+
 export function setSoundMuted(muted: boolean) {
   isMuted = muted;
   if (typeof localStorage !== 'undefined') {
@@ -85,11 +97,13 @@ export function playBlip(freq = 1200) {
   }
 }
 
-// Success chime
+// Success chime (carries a same-frame haptic tap)
 export function playSuccessChime() {
   if (getSoundMuted()) return;
   const ctx = getAudioContext();
   if (!ctx) return;
+
+  vibrate(15);
 
   try {
     const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
@@ -114,11 +128,13 @@ export function playSuccessChime() {
   }
 }
 
-// Epic overdrive / easter egg synth fanfare
+// Epic overdrive / easter egg synth fanfare (always carries the haptic pulse)
 export function playOverdriveFanfare() {
   if (getSoundMuted()) return;
   const ctx = getAudioContext();
   if (!ctx) return;
+
+  vibrate([20, 60, 20]);
 
   try {
     const arpeggio = [440, 554.37, 659.25, 880, 1108.73, 1318.51, 1760];

@@ -3,12 +3,14 @@ import { useRef } from 'react';
 import { SKILLS } from '../data/content';
 import { SectionHeader } from './SectionHeader';
 import { SpotlightCard } from './SpotlightCard';
+import { useRespectfulMotion } from '../motion';
 import './Skills.css';
 import './SectionHeader.css';
 
 export const Skills = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-60px' });
+  const { reduced, spring } = useRespectfulMotion();
 
   return (
     <section id="skills" className="section">
@@ -18,13 +20,9 @@ export const Skills = () => {
           {SKILLS.map((category, catIndex) => (
             <motion.div
               key={category.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{
-                duration: 0.5,
-                delay: catIndex * 0.08,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+              initial={reduced ? { opacity: 0 } : { opacity: 0, y: 20 }}
+              animate={isInView ? (reduced ? { opacity: 1 } : { opacity: 1, y: 0 }) : {}}
+              transition={{ ...spring, delay: catIndex * 0.08 }}
             >
               <SpotlightCard className="skills-category-spotlight">
                 <div className="skills-category__inner">

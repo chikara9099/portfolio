@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion';
 import './Magnetic.css';
 
 interface MagneticProps {
@@ -14,6 +14,7 @@ export const Magnetic: React.FC<MagneticProps> = ({
   className = '',
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
+  const reduced = useReducedMotion();
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -23,7 +24,7 @@ export const Magnetic: React.FC<MagneticProps> = ({
   const springY = useSpring(y, springConfig);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+    if (!ref.current || reduced) return;
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
 

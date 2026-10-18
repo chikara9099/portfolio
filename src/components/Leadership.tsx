@@ -3,12 +3,14 @@ import { useRef } from 'react';
 import { Users } from 'lucide-react';
 import { LEADERSHIP } from '../data/content';
 import { SectionHeader } from './SectionHeader';
+import { useRespectfulMotion } from '../motion';
 import './Leadership.css';
 import './SectionHeader.css';
 
 export const Leadership = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const { reduced, transitionSlow } = useRespectfulMotion();
 
   return (
     <section id="leadership" className="section">
@@ -17,9 +19,9 @@ export const Leadership = () => {
         <motion.div
           ref={ref}
           className="leadership__card"
-          initial={{ opacity: 0, y: 25 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 25 }}
+          animate={isInView ? (reduced ? { opacity: 1 } : { opacity: 1, y: 0 }) : {}}
+          transition={{ ...transitionSlow, delay: 0.15 }}
         >
           <div className="leadership__icon-wrap">
             <Users size={22} />

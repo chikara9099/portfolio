@@ -19,7 +19,13 @@ export const Navbar = () => {
   const [activeSection, setActiveSection] = useState('');
 
   useEffect(() => {
-    const handleScroll = () => {
+    let ticking = false;
+    let rafId = 0;
+
+    // The scroll handler runs at most once per frame: rect reads + setState
+    // are coalesced into a single rAF instead of firing on every scroll event.
+    const update = () => {
+      ticking = false;
       setScrolled(window.scrollY > 50);
 
       // Determine active section
@@ -37,8 +43,17 @@ export const Navbar = () => {
       setActiveSection('');
     };
 
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      rafId = requestAnimationFrame(update);
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
