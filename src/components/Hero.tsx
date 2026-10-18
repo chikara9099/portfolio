@@ -13,13 +13,6 @@ import './Hero.css';
 
 const nameWords = "Shahriar Alam Patwary".split(' ');
 
-/* Credential strip — the strongest facts, no decoration */
-const CREDENTIALS = [
-  'IUT ICT Fest Champion 2026',
-  'Production software · 180+ units',
-  'NASA Space Apps · National Selection',
-];
-
 export const Hero = () => {
   const { showToast } = useToast();
   const { reduced, springSlow, fade } = useRespectfulMotion();
@@ -112,17 +105,6 @@ export const Hero = () => {
           {PROFILE.tagline}
         </motion.p>
 
-        {/* Credential strip */}
-        <motion.ul
-          className="hero__credentials"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={reduced ? fade : ({ ...fade, delay: reduced ? 0 : 1.05 } as Transition)}
-        >
-          {CREDENTIALS.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </motion.ul>
 
         {/* Actions */}
         <motion.div

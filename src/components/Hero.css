@@ -115,32 +115,6 @@
   letter-spacing: 0.04em;
 }
 
-/* Credential strip — mono, quiet, one line */
-.hero__credentials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.35rem 0;
-  list-style: none;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
-  max-width: 100%;
-}
-
-.hero__credentials li {
-  display: inline-flex;
-  align-items: center;
-}
-
-.hero__credentials li + li::before {
-  content: '·';
-  margin: 0 0.9rem;
-  color: var(--accent);
-}
-
 .hero__actions {
   display: flex;
   align-items: center;
@@ -294,14 +268,5 @@
   .hero__avatar-frame {
     width: 96px;
     height: 96px;
-  }
-
-  .hero__credentials {
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .hero__credentials li + li::before {
-    content: none;
   }
 }
